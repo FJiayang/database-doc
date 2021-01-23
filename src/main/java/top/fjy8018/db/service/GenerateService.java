@@ -3,6 +3,7 @@ package top.fjy8018.db.service;
 import cn.smallbun.screw.core.Configuration;
 import cn.smallbun.screw.core.engine.EngineConfig;
 import cn.smallbun.screw.core.engine.EngineFileType;
+import cn.smallbun.screw.core.engine.EngineTemplateType;
 import cn.smallbun.screw.core.execute.DocumentationExecute;
 import cn.smallbun.screw.core.process.ProcessConfig;
 import com.google.common.collect.HashMultimap;
@@ -23,6 +24,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -73,11 +75,15 @@ public class GenerateService {
             DataSource dataSource = databaseHandler.getDataSource();
             // 表集合
             Collection<String> tableList = tableMap.get(database.getName());
-            screw(dataSource,tableList);
+            screw(dataSource,tableList,database.getName());
         }
     }
 
-    private void screw(DataSource dataSource, Collection<String> tableList) {
+    private void screw(DataSource dataSource, Collection<String> tableList,String databaseName) {
+        log.info("生成表：{}", Arrays.toString(tableList.toArray()));
+        if (tableList.size()==0){
+            return;
+        }
         //生成配置
         EngineConfig engineConfig = EngineConfig.builder()
                 //生成文件路径
@@ -86,8 +92,10 @@ public class GenerateService {
                 .openOutputDir(true)
                 //文件类型
                 .fileType(EngineFileType.WORD)
+                //生成模板实现
+                .produceType(EngineTemplateType.freemarker)
                 //自定义文件名称
-                .fileName("自定义文件名称").build();
+                .fileName(databaseName).build();
 
         //指定表
         ArrayList<String> tableName = new ArrayList<>(tableList);
