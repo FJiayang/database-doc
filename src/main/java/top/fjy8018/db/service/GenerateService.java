@@ -3,33 +3,27 @@ package top.fjy8018.db.service;
 import cn.smallbun.screw.core.Configuration;
 import cn.smallbun.screw.core.engine.EngineConfig;
 import cn.smallbun.screw.core.engine.EngineFileType;
-import cn.smallbun.screw.core.engine.EngineTemplateType;
 import cn.smallbun.screw.core.execute.DocumentationExecute;
 import cn.smallbun.screw.core.process.ProcessConfig;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import top.fjy8018.db.config.EnvConfigurationProperties;
-import top.fjy8018.db.constant.DatabaseCons;
+import top.fjy8018.db.constant.DatabaseEnums;
+import top.fjy8018.db.factory.DatabaseHandlerFactory;
+import top.fjy8018.db.handler.DatabaseHandler;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author F嘉阳
@@ -45,7 +39,7 @@ public class GenerateService {
     private static Multimap<String,String> tableMap = HashMultimap.create();
     
     @Autowired
-    private ApplicationContext context;
+    private DatabaseHandlerFactory factory;
 
     @Autowired
     private EnvConfigurationProperties properties;
@@ -70,16 +64,15 @@ public class GenerateService {
         log.info("装载数据表文件成功");
     }
 
-    public void generate(){
+    public void generate() throws IllegalAccessException {
         loadDatafile();
         // 遍历所有数据库
-        Field[] fields = DatabaseCons.class.getFields();
-        for (Field d : fields) {
-            String databaseName = d.getName();
-            // 数据库连接
-            DataSource dataSource = context.getBean(databaseName, DataSource.class);
+        for (DatabaseEnums database : DatabaseEnums.values()) {
+            log.info("操作数据库：{}",database.getName());
+            DatabaseHandler databaseHandler = factory.getDatabaseHandler(database.getName());
+            DataSource dataSource = databaseHandler.getDataSource();
             // 表集合
-            Collection<String> tableList = tableMap.get(databaseName);
+            Collection<String> tableList = tableMap.get(database.getName());
             screw(dataSource,tableList);
         }
     }
