@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -106,10 +108,10 @@ public class GenerateService {
                 .build();
         //配置
         Configuration config = Configuration.builder()
-                //版本
-                .version("1.0.0")
+                //版本为生成日期
+                .version(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                 //描述
-                .description("数据库设计文档生成")
+                .description("数据字典")
                 //数据源
                 .dataSource(dataSource)
                 //生成配置
