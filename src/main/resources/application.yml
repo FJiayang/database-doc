@@ -1,0 +1,16 @@
+doc:
+  env:
+    # 输出位置
+    file-dir: E:\tmp\database-doc
+    # 支持WORD、HTML、MD
+    file-type: WORD
+    db:
+      blade:
+        address: jdbc:mysql://192.168.133.128:3306/
+        password: root
+        username: root
+      nacos:
+        address: jdbc:mysql://192.168.133.128:3306/
+        password: root
+        username: root
+

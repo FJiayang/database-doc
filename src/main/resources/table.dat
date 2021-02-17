@@ -1,0 +1,13 @@
+blade|*
+nacos|config_info
+nacos|config_info_aggr
+nacos|config_info_beta
+nacos|config_info_tag
+nacos|config_tags_relation
+nacos|group_capacity
+nacos|his_config_info
+nacos|permissions
+nacos|roles
+nacos|tenant_capacity
+nacos|tenant_info
+nacos|users
